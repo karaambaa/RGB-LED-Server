@@ -17,7 +17,7 @@ apt-get update
 apt-get -y upgrade
 apt-get -y install pip
 apt-get install apache2 -y
-sudo apt-get install python-pip python2.7-dev portaudio19-dev python-scipy python-matplotlib -y
+sudo apt-get install python-pip python2.7-dev portaudio19-dev python-scipy -y
 sudo pip install pyaudio
 cd /
 pip install sockjs-tornado 
@@ -37,10 +37,9 @@ sudo rm -rf var/www/html/*
 sudo cp -r html/* var/www/html/
 
 echo "setting up Pythonscripts"
-sudo cp server.py /bin/
-sudo cp rainbow.py /bin/
-sudo cp RGBlauncher.sh /bin/
-sudo cp music_ledstrip.py /bin/
+sudo mkdir /bin/lightberry
+sudo cp server.py /bin/lightberry/
+sudo cp RGBlauncher.sh /bin/lightberry
 
 crons=$(sudo crontab -l)
 coman="@reboot sh /bin/RGBlauncher.sh"
@@ -48,5 +47,5 @@ coman="@reboot sh /bin/RGBlauncher.sh"
 if echo "$crons" | grep -q "$coman"; then
     echo "Autostart allready enabled"
 else
-    ( sudo crontab -l ; echo "@reboot sh /bin/RGBlauncher.sh" ) | crontab -
+    ( sudo crontab -l ; echo "@reboot sh /bin/lightberryRGBlauncher.sh" ) | crontab -
 fi

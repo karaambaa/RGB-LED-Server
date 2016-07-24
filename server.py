@@ -247,7 +247,7 @@ class FreqAnalyser:
                 # here - probably want to avoid high values of
                 # all because it will be white 
                 # (Emphasise/Reduce bass, mids, treble)
-                l[i] *= equalizer[i]
+                l[i] *= float(equalizer[i])
                 l[i] = (l[i] * 256) - 1
 
                 # Use new val if > previous max

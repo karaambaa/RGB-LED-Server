@@ -55,6 +55,10 @@ class LedController:
         return hex
 
     def hsl_to_rgb(self, hsl):
+        if any(i > 1 for i in hsl):
+            hsl[0] /= 360
+            hsl[1] /= 100
+            hsl[2] /= 100
         colour_tuple = tuple(i * 255 for i in colorsys.hls_to_rgb(hsl[0], hsl[2], hsl[1]))
         return colour_tuple
     
@@ -219,15 +223,16 @@ class FreqAnalyser:
         
                              
         if mode == "Music":
+            HUEcolor = MusicColor
             swift = (sum(l) * random.uniform(0, 7))
             if swift < 0.5:
                 swift = 0.5
 
-            if (MusicColor == "Auto"):
+            if (HUEcolor == "Auto"):
                 global HUE
                 HUE += swift
             else:
-                rgb = lc.hex_to_rgb(MusicColor)
+                rgb = lc.hex_to_rgb(HUEcolor)
                 rgb = [float(rgb[i]) / 255.0 for i in range(3)]
                 global HUE
                 HUE = colorsys.rgb_to_hls(rgb[0], rgb[1], rgb[2])[0] * 360
@@ -237,7 +242,7 @@ class FreqAnalyser:
             if light > 0.6:
                 light = 0.6
 
-            RGB = lc.hsl_to_rgb([HUE / 360, light, 1])
+            RGB = lc.hsl_to_rgb([HUE / 360, 1, light])
                              
         elif mode == "Music1":
             equalizer = MusicColor
@@ -440,15 +445,20 @@ class BrokerConnection(sockjs.tornado.SockJSConnection):
     def message_analyser(self,msg):
         RGBcolor = [0,0,0]
         if msg.startswith('#'):
-            RGBcolor = lc.hex_to_rgb(msg)
+            RGBcolor = self.lc.hex_to_rgb(msg)
         elif msg.startswith('rgb'):
-            RGBcolor = msg[4:-1].split(',')
+            RGBcolor = [float(i) for i in msg[4:-1].split(',')]
         elif msg.startswith('hsl'):
-            RGBcolor = lc.hsl_to_rgb(msg[4:-1].split(','))
+            hslString = msg[4:-1].split(',')
+            for i in range(3):
+                if '%' in hslString[i]:
+                    pos = hslString[i].index('%')
+                    hslString[i] = hslString[i][:pos]
+            RGBcolor = self.lc.hsl_to_rgb([float(i) for i in hslString])
         elif msg.count(',') == 1:
             RGBcolor = msg.split(',')
         elif msg.count(',') == 2 and not any(c.isalpha() for c in msg):
-            RGBcolor = msg.split(',')
+            RGBcolor = [float(i) for i in msg[4:-1].split(',')]
         else:
             RGBcolor = [0,0,0]
             print "Unsupported color model"

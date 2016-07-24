@@ -49,3 +49,5 @@ if echo "$crons" | grep -q "$coman"; then
 else
     ( sudo crontab -l ; echo "@reboot sh /bin/lightberryRGBlauncher.sh" ) | crontab -
 fi
+
+echo "You should reboot now"

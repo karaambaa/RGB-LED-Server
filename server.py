@@ -240,7 +240,7 @@ class FreqAnalyser:
             RGB = lc.hsl_to_rgb([HUE / 360, light, 1])
                              
         elif mode == "Music1":
-            equalizer = MusicColor.split('#')
+            equalizer = MusicColor
 
             for i in range(3):
                 # Do any number fudging to make it look better
